@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 98d63023d2e61fe88e3d81da47ce9f95b69da624d56511f644c1d291499d4aa8
+-- hash: 5669cbc7c755411c0bf5b8c5dac4d1ec5e5a23b3442698941d0307df17d388ce
 
 name:           Fractolio
 version:        0.1.0.0
@@ -29,7 +29,10 @@ library
   hs-source-dirs:
       src
   build-depends:
-      base >=4.7 && <5
+      JuicyPixels
+    , base >=4.7 && <5
+    , bytestring
+    , repa
   exposed-modules:
       Lib
   other-modules:
@@ -43,7 +46,10 @@ executable Fractolio-exe
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       Fractolio
+    , JuicyPixels
     , base >=4.7 && <5
+    , bytestring
+    , repa
   other-modules:
       Paths_Fractolio
   default-language: Haskell2010
@@ -56,7 +62,10 @@ test-suite Fractolio-test
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       Fractolio
+    , JuicyPixels
     , base >=4.7 && <5
+    , bytestring
+    , repa
   other-modules:
       Paths_Fractolio
   default-language: Haskell2010
