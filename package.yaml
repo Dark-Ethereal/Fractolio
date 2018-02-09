@@ -24,6 +24,7 @@ dependencies:
 - repa
 - JuicyPixels
 - bytestring
+- optparse-applicative
 
 library:
   source-dirs: src
