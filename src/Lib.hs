@@ -7,8 +7,11 @@ import           Codec.Picture.Saving (imageToPng)
 import           Codec.Picture.Types
 import qualified Data.ByteString.Lazy as B
 import           Data.Complex
+import           Data.Monoid          hiding ((<>))
+import           Data.Ratio
 import           Data.Semigroup       ((<>))
 import           Options.Applicative
+
 
 data View = View
   { coords     :: (Double, Double)
@@ -16,6 +19,11 @@ data View = View
   , resolution :: (Int, Int)
   , iters      :: Int
   }
+
+data MandelResult = MandelResult
+  { iterCount :: Ratio Int
+  , lastNum   :: Complex Double
+  , interSum  :: Double}
 
 viewParser :: Parser View
 viewParser = View
@@ -41,10 +49,22 @@ viewParser = View
       <> value 64
       )
 
-mandel :: Int -> Complex Double -> Int
-mandel maxIter = length . takeWhile ((2 >=) . magnitude) . take maxIter . z
+mandel :: Int -> Complex Double -> MandelResult
+mandel maxIter comp = MandelResult
+  { iterCount = ic % maxIter
+  , lastNum = if ic == maxIter then last zl else zl !! ic
+  , interSum = if ic == maxIter then sumLengths zl else sumLengths (f zl)
+  }
   where
-    z c = iterate (\x -> x^2 + c) 0
+    iterCount = ic % maxIter
+    ic = (length . f) zl
+    zl :: [Complex Double]
+    zl = z comp
+
+    z :: Complex Double -> [Complex Double]
+    z c = take maxIter . iterate (\x -> x^2 + c) $ 0
+    f = takeWhile ((2>=) . magnitude)
+    sumLengths = getSum . foldMap Sum . fmap magnitude
 
 mkImage :: View -> Image PixelRGB8
 mkImage v = uncurry (generateImage (imfunc v)) $ resolution v
@@ -60,8 +80,12 @@ pixToComplex (View (cx, cy) z (rx,ry) _) x y = nx :+ ny
     scaler = (2/(fromIntegral ry))*2.5*z
 
 mandelbrotColor ::Int -> Complex Double -> PixelRGB8
-mandelbrotColor i c = PixelRGB8 m m m
-  where m = if mandel i c < i then fromIntegral $ (mandel i c) * 255 `div` i else 0
+mandelbrotColor i c = PixelRGB8 r g b
+  where
+    MandelResult ic ln is  = mandel i c
+    r = if ic < 1 then fromIntegral . floor $ ic * 255 else 0
+    g = floor . (*255) . (/2) . magnitude $ ln
+    b = floor . (*255) . (/is) $ (magnitude ln)
 
 opts = info (viewParser <**> helper)
   ( fullDesc
