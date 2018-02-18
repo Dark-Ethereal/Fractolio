@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: e3714e7f6a6f14fde3bfc1c24d4c3709ebd57f3d85b408a9047190c74109426c
+-- hash: 801e5b5da2eb673c54e88243fb4b6752118e8547df85477c127d98484b7b6497
 
 name:           Fractolio
 version:        0.1.0.0
@@ -44,7 +44,7 @@ executable Fractolio-exe
   main-is: Main.hs
   hs-source-dirs:
       app
-  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N -Wall
   build-depends:
       Fractolio
     , JuicyPixels
